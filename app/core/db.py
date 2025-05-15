@@ -32,6 +32,10 @@ class DataBase:
             expire_on_commit=False,
         )
 
+    @property
+    def engine(self) -> AsyncEngine:
+        return self._engine
+
     async def dispose(self):
         await self._engine.dispose()
 
