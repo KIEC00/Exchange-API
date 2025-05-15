@@ -4,6 +4,7 @@ import uvicorn
 
 from app.core import config, db
 from app.models.base import BaseORM
+from app.api import router as api_router
 
 
 @asynccontextmanager
@@ -17,6 +18,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(api_router)
 
 
 def main() -> None:

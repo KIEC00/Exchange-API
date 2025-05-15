@@ -17,7 +17,7 @@ class DataBase:
         echo_pool=False,
         pool_size=5,
         max_overflow=10,
-    ):
+    ) -> None:
         self._engine: AsyncEngine = create_async_engine(
             url=url,
             echo=echo,
@@ -36,7 +36,7 @@ class DataBase:
     def engine(self) -> AsyncEngine:
         return self._engine
 
-    async def dispose(self):
+    async def dispose(self) -> None:
         await self._engine.dispose()
 
     async def session_maker(self) -> AsyncGenerator[AsyncSession, None]:
