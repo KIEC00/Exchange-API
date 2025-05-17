@@ -1,19 +1,21 @@
-from sqlalchemy import Column, Integer, String, Float, Enum
-from sqlalchemy.ext.declarative import declarative_base
-import enum
+from uuid import uuid4
+from enum import Enum as PyEnum
 
-Base = declarative_base()
+from sqlalchemy import String, Float, Integer, Enum, Uuid
+from sqlalchemy.orm import Mapped, mapped_column
 
-class OrderSide(str, enum.Enum):
-    buy = "buy"
-    sell = "sell"
+from app.models.base import BaseORM
 
-class Order(Base):
-    __tablename__ = "orders"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String, index=True)  # Или Integer, если у тебя числовой ID
-    instrument = Column(String, index=True)
-    side = Column(Enum(OrderSide), nullable=False)
-    quantity = Column(Float, nullable=False)
-    price = Column(Float, nullable=False)
+class OrderSide(str, PyEnum):
+    BUY = "buy"
+    SELL = "sell"
+
+
+class Order(BaseORM):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[str] = mapped_column(String, index=True)  # Или Mapped[int], если ID числовой
+    instrument: Mapped[str] = mapped_column(String, index=True)
+    side: Mapped[OrderSide] = mapped_column(Enum(OrderSide), nullable=False)
+    quantity: Mapped[float] = mapped_column(Float, nullable=False)
+    price: Mapped[float] = mapped_column(Float, nullable=False)
