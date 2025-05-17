@@ -5,11 +5,11 @@ from app.core.consts import TOKEN_PREFIX
 Token = str | UUID
 
 
-def strip_token_prefix(token: Token) -> UUID:
+def token_to_uuid(token: Token) -> UUID:
     if isinstance(token, UUID):
         return token
     if isinstance(token, str):
-        return UUID(token.removeprefix(TOKEN_PREFIX))
+        return UUID(token.strip().removeprefix(TOKEN_PREFIX))
     raise TypeError(f"Invalid token type {type(token)}, expected {Token}")
 
 
