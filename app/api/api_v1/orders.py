@@ -1,32 +1,47 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from pydantic import BaseModel
 from typing import Literal
 import uuid
 
+
+from app.models.orders import Order, OrderSide
+from app.dependencies.db import get_db
+
 router = APIRouter()
 
-# Заглушка для авторизации
-def get_current_user():
-    return "user123"  # Здесь будет реальный пользователь ID
-
-# Модель заявки
 class OrderRequest(BaseModel):
-    instrument: str  # Например: "BTC"
+    instrument: str
     side: Literal["buy", "sell"]
     quantity: float
     price: float
 
-# Ответ после создания
 class OrderResponse(BaseModel):
-    order_id: str
+    order_id: int
     status: str
 
-# Эндпоинт для создания заявки
+# Заглушка для текущего пользователя
+def get_current_user():
+    return "user123"
+
 @router.post("/orders", response_model=OrderResponse)
-async def create_order(order: OrderRequest, user: str = Depends(get_current_user)):
-    # Здесь будет логика сохранения в БД
-    fake_order_id = str(uuid.uuid4())
+async def create_order(
+    order: OrderRequest,
+    db: AsyncSession = Depends(get_db),
+    user_id: str = Depends(get_current_user)
+):
+    db_order = Order(
+        user_id=user_id,
+        instrument=order.instrument,
+        side=order.side,
+        quantity=order.quantity,
+        price=order.price
+    )
+    db.add(db_order)
+    await db.commit()
+    await db.refresh(db_order)
     return {
-        "order_id": fake_order_id,
+        "order_id": db_order.id,
         "status": "created"
     }
