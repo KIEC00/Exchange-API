@@ -1,5 +1,5 @@
 from uuid import uuid4
-from sqlalchemy import UUID, String, Uuid
+from sqlalchemy import UUID, String, Uuid, JSON
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.consts import USER_NAME_MAX_LENGTH
@@ -13,3 +13,4 @@ class User(BaseORM):
     role: Mapped[UserRole] = mapped_column(default=UserRole.USER, nullable=False)
     api_key: Mapped[UUID] = mapped_column(Uuid(), unique=True, nullable=False)
     deactivated: Mapped[bool] = mapped_column(default=False, nullable=False)
+    balance: Mapped[dict[str, float]] = mapped_column(JSON, default=dict)
